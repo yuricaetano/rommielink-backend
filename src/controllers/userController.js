@@ -39,7 +39,7 @@ export const getUserById = async (req, res) => {
 };
 
 // Obter todos os usuários
-export const getUser = async (req, res) => {
+export const getAllUsers = async (req, res) => {
   try {
     const users = await prisma.user.findMany(); // Busca todos os usuários no banco
     if (users.length === 0) {

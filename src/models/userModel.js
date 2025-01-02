@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+const mongoose = require('mongoose'); //para que serve o userModel afinal?
 
 const Schema = mongoose.Schema;
 
