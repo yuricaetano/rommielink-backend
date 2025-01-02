@@ -26,23 +26,41 @@ model Estudante {
   tipoQuarto String
   valorMaximoAluguel Float
   periodoMaximoLocacao String
-  peridoMinimoLocacao String
+  periodoMinimoLocacao String
   fotoPerfil String
   sexo String
   instituicao String @default("")
   curso String @default("")
-  matricula String @default("")
+  cpf String @unique
+  rg String @unique
   userId String @unique
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
   preferencias Preferencias[]
 }
 
+enum TipoConvivencia {
+  OCASIONAL
+  REGULAR
+  INTENSA
+}
+
 model Preferencias {
   id String @id @default(uuid())
+  genero_moradores String
+  orientacao_sexual_moradores String
+  numero_moradores Int
   fumante Boolean
   possuiAnimal Boolean
+  tipoAnimal String?
+  idade_minima Int
+  idade_maxima Int
+  religioso Boolean
+  religiao String?
+  tipoConvivencia TipoConvivencia
+  maiorQualidade  String?
+  piorDefeito String?
+  principalFatorMoradia String?
   proximidades Proximidades[]
-  caracteristicas String
   estudanteId String
   estudante Estudante @relation(fields: [estudanteId], references: [id], onDelete: Cascade)
 }
@@ -52,6 +70,8 @@ model Anunciante {
   userId String @unique
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
   imovel Imovel[]
+
+  @@map("anunciante") // Mapeia para a tabela com nome em minúsculo
 }
 
 model Imovel {
@@ -83,6 +103,9 @@ model Proximidades {
   pontoOnibus Boolean
   estacaoMetro Boolean
   imovelId String
+  Policiamento Boolean
+  Lazer_Cultura Boolean
+  Areas_Verdes Boolean
   preferenciaId String
   imovel Imovel @relation(fields: [imovelId], references: [id], onDelete: Cascade)
   preferencia Preferencias @relation(fields: [preferenciaId], references: [id], onDelete: Cascade)
