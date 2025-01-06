@@ -3,7 +3,20 @@ import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
 
 export const createEstudante = async (req, res) => {
-  const { tipoQuarto, valorMaximoAluguel, periodoMaximoLocacao, periodoMinimoLocacao, fotoPerfil, sexo, instituicao, curso, cpf, rg, userId, preferencias } = req.body;
+  const { 
+    tipoQuarto, 
+    valorMaximoAluguel, 
+    periodoMaximoLocacao, 
+    periodoMinimoLocacao, 
+    fotoPerfil, 
+    sexo, 
+    instituicao, 
+    curso, 
+    cpf, 
+    rg, 
+    userId, 
+    preferencias 
+  } = req.body;
 
   try {
     const newEstudante = await prisma.estudante.create({
@@ -20,7 +33,10 @@ export const createEstudante = async (req, res) => {
         rg,
         userId,
         preferencias: {
-          create: preferencias // Vincula as preferências diretamente ao estudante (se fornecido)
+          connectOrCreate: preferencias.map(preferencia => ({
+            where: { id: preferencia.id }, // Assumindo que você tem um id para as preferências
+            create: preferencia, // Criando novas preferências se não existirem
+          })),
         },
       },
     });
@@ -34,11 +50,37 @@ export const createEstudante = async (req, res) => {
 
 export const updateEstudante = async (req, res) => {
   const { id } = req.params;
-  const { tipoQuarto, valorMaximoAluguel, periodoMaximoLocacao, periodoMinimoLocacao, fotoPerfil, sexo, instituicao, curso, cpf, rg, userId, preferencias } = req.body;
+  const { 
+    tipoQuarto, 
+    valorMaximoAluguel, 
+    periodoMaximoLocacao, 
+    periodoMinimoLocacao, 
+    fotoPerfil, 
+    sexo, 
+    instituicao, 
+    curso, 
+    cpf, 
+    rg, 
+    userId, 
+    preferencias 
+  } = req.body;
   try {
     const updatedEstudante = await prisma.estudante.update({
       where: { id },
-      data: { tipoQuarto, valorMaximoAluguel, periodoMaximoLocacao, periodoMinimoLocacao, fotoPerfil, sexo, instituicao, curso, cpf, rg, userId, preferencias },
+      data: { 
+        tipoQuarto, 
+        valorMaximoAluguel, 
+        periodoMaximoLocacao, 
+        periodoMinimoLocacao, 
+        fotoPerfil, 
+        sexo, 
+        instituicao, 
+        curso, 
+        cpf, 
+        rg, 
+        userId, 
+        preferencias 
+      },
     });
     res.status(200).json(updatedEstudante);
   } catch (error) {
@@ -77,7 +119,9 @@ export const getEstudanteById = async (req, res) => {
   try {
     const estudante = await prisma.estudante.findUnique({
       where: { id },
-      include: { user: true }, // Inclui informações do usuário relacionado
+      include: { 
+        preferencias: true // Inclui informações de preferencias relacionado
+      },
     });
     if (!estudante) {
         return res.status(404).json({ error: 'Estudante não encontrado.' });
