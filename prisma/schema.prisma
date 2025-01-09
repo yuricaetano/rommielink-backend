@@ -39,9 +39,9 @@ model Estudante {
 }
 
 enum TipoConvivencia {
-  OCASIONAL
-  REGULAR
-  INTENSA
+  Independente
+  Moderada
+  Compartilhada
 }
 
 model Preferencias {
@@ -102,12 +102,12 @@ model Proximidades {
   agenciaBancaria Boolean
   pontoOnibus Boolean
   estacaoMetro Boolean
-  imovelId String
+  imovelId String? @unique
   Policiamento Boolean
   Lazer_Cultura Boolean
   Areas_Verdes Boolean
   preferenciaId String
-  imovel Imovel @relation(fields: [imovelId], references: [id], onDelete: Cascade)
+  imovel Imovel? @relation(fields: [imovelId], references: [id], onDelete: Cascade)
   preferencia Preferencias @relation(fields: [preferenciaId], references: [id], onDelete: Cascade)
 }
 

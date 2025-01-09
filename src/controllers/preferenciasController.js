@@ -41,9 +41,7 @@ export const createPreferencias = async (req, res) => {
         piorDefeito,
         principalFatorMoradia,
         estudanteId,
-        proximidades: {
-          create: proximidades, // Cria as proximidades associadas
-        },
+        proximidades
       },
     });
 
@@ -53,7 +51,6 @@ export const createPreferencias = async (req, res) => {
   }
 };
 
-// Atualizar preferências de um estudante
 export const updatePreferencias = async (req, res) => {
   const { id } = req.params;
   const {
@@ -71,7 +68,7 @@ export const updatePreferencias = async (req, res) => {
     maiorQualidade,
     piorDefeito,
     principalFatorMoradia,
-    proximidades, // Lista de proximidades a atualizar
+    proximidades, // Opcional
   } = req.body;
 
   try {
@@ -92,10 +89,12 @@ export const updatePreferencias = async (req, res) => {
         maiorQualidade,
         piorDefeito,
         principalFatorMoradia,
-        proximidades: {
-          deleteMany: {}, // Deleta as proximidades antigas
-          create: proximidades, // Cria as novas proximidades
-        },
+        ...(proximidades && { // Adiciona proximidades apenas se forem fornecidas
+          proximidades: {
+            deleteMany: {}, // Remove todas as proximidades existentes
+            create: proximidades, // Cria novas proximidades
+          },
+        }),
       },
     });
 

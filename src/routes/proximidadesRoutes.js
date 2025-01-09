@@ -16,5 +16,4 @@ router.get('/proximidades/estudante/:estudanteId', getProximidadesByEstudanteId)
 // Buscar proximidades pelo ID do imóvel
 router.get('/proximidades/imovel/:imovelId', getProximidadesByImovelId);
 
-
 export default router;

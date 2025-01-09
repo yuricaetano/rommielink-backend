@@ -1,7 +1,7 @@
 import {Router} from 'express';
 import{
     getAllEstudantes,
-    getEstudanteById,
+    getEstudanteByIdDetalhado,
     createEstudante,
     updateEstudante,
     deleteEstudante
@@ -10,7 +10,7 @@ import{
 const router = Router();
 
 router.get('/', getAllEstudantes);
-router.get('/:id', getEstudanteById);
+router.get('/:id', getEstudanteByIdDetalhado);
 router.post('/', createEstudante);
 router.put('/:id', updateEstudante);
 router.delete('/:id', deleteEstudante);

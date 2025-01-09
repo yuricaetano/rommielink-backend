@@ -19,6 +19,16 @@ export const createEstudante = async (req, res) => {
   } = req.body;
 
   try {
+    console.log("Dados recebidos:", req.body);
+
+    // Validação do campo tipoConvivencia em cada preferência
+    const validValues = ["Independente", "Moderada", "Compartilhada"];
+    for (const preferencia of preferencias) {
+      if (!validValues.includes(preferencia.tipoConvivencia)) {
+        return res.status(400).json({ error: `Valor inválido para tipoConvivencia: ${preferencia.tipoConvivencia}` });
+      }
+    }
+
     const newEstudante = await prisma.estudante.create({
       data: {
         tipoQuarto,
@@ -33,16 +43,45 @@ export const createEstudante = async (req, res) => {
         rg,
         userId,
         preferencias: {
-          connectOrCreate: preferencias.map(preferencia => ({
-            where: { id: preferencia.id }, // Assumindo que você tem um id para as preferências
-            create: preferencia, // Criando novas preferências se não existirem
-          })),
-        },
+          create: preferencias.map((pref) => ({
+            genero_moradores: pref.genero_moradores,
+            orientacao_sexual_moradores: pref.orientacao_sexual_moradores,
+            numero_moradores: pref.numero_moradores,
+            fumante: pref.fumante,
+            possuiAnimal: pref.possuiAnimal,
+            tipoAnimal: pref.tipoAnimal,
+            idade_minima: pref.idade_minima,
+            idade_maxima: pref.idade_maxima,
+            religioso: pref.religioso,
+            religiao: pref.religiao,
+            tipoConvivencia: pref.tipoConvivencia,
+            maiorQualidade: pref.maiorQualidade,
+            piorDefeito: pref.piorDefeito,
+            principalFatorMoradia: pref.principalFatorMoradia,
+            proximidades: {
+              create: pref.proximidades.map((prox) => ({
+                universidade: prox.universidade,
+                academia: prox.academia,
+                hospital: prox.hospital,
+                farmacia: prox.farmacia,
+                mercado: prox.mercado,
+                shopping: prox.shopping,
+                postoGasolina: prox.postoGasolina,
+                agenciaBancaria: prox.agenciaBancaria,
+                pontoOnibus: prox.pontoOnibus,
+                estacaoMetro: prox.estacaoMetro,
+                Policiamento: prox.Policiamento,
+                Lazer_Cultura: prox.Lazer_Cultura,
+                Areas_Verdes: prox.Areas_Verdes,
+              }))
+            }
+          }))
+        }
       },
     });
-
     res.status(201).json(newEstudante);
   } catch (error) {
+    console.error("Erro ao criar estudante:", error);
     res.status(500).json({ error: 'Erro ao criar estudante' });
   }
 };
@@ -60,9 +99,7 @@ export const updateEstudante = async (req, res) => {
     instituicao, 
     curso, 
     cpf, 
-    rg, 
-    userId, 
-    preferencias 
+    rg
   } = req.body;
   try {
     const updatedEstudante = await prisma.estudante.update({
@@ -77,9 +114,7 @@ export const updateEstudante = async (req, res) => {
         instituicao, 
         curso, 
         cpf, 
-        rg, 
-        userId, 
-        preferencias 
+        rg
       },
     });
     res.status(200).json(updatedEstudante);
@@ -114,13 +149,17 @@ export const getAllEstudantes = async (req, res) => {
     }
 };
 
-export const getEstudanteById = async (req, res) => {
+export const getEstudanteByIdDetalhado = async (req, res) => {
   const { id } = req.params;
   try {
     const estudante = await prisma.estudante.findUnique({
       where: { id },
       include: { 
-        preferencias: true // Inclui informações de preferencias relacionado
+        preferencias:{ // Inclui informações de preferencias relacionado
+          include: {
+            proximidades: true // Inclui informações de proximidades relacionado
+          },
+        }
       },
     });
     if (!estudante) {
