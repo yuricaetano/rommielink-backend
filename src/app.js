@@ -16,6 +16,6 @@ app.use("/api/proximidades", proximidadesRoutes);
 // app.use("/api/anunciante", anuncianteRoutes);
 // app.use("/api", imovelRoutes);
 
-app.listen(3000, () => console.log("Servidor rodando na porta 3000"));
+// app.listen(3000, () => console.log("Servidor rodando na porta 3000"));
 
 export default app;
