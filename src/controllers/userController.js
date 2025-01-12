@@ -1,24 +1,83 @@
+import jwt from 'jsonwebtoken';
+import bcrypt from 'bcrypt';
 import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
+// Número de rounds para o hash
+const SALT_ROUNDS = 10;
+// Configuração do JWT
+const SECRET_KEY = process.env.SECRET_KEY;
+
 // Criar um novo usuário
 export const createUser = async (req, res) => {
-  const { nome, email } = req.body;
+  const { nome, email, senha, telefone, dataNascimento, nomeUsuario } = req.body;
+
   try {
+    // Verificar se o email já existe
+    const usuarioExistente = await prisma.user.findUnique({
+      where: { email },
+    });
+    if (usuarioExistente) {
+      return res.status(400).json({ error: 'Email já cadastrado.' });
+    }
+
+    // Criptografar a senha
+    const hashedSenha = await bcrypt.hash(senha, SALT_ROUNDS);
+
+    // Criar o usuário no banco
     const newUser = await prisma.user.create({
       data: {
         nome,
         email,
-        senha: req.body.senha,
-        telefone: req.body.telefone,
-        dataNascimento: req.body.dataNascimento,
-        nomeUsuario: req.body.nomeUsuario,
+        senha: hashedSenha, // Salvar senha criptografada
+        telefone,
+        dataNascimento,
+        nomeUsuario,
       },
     });
-    res.json(newUser);
+
+    res.status(201).json(newUser);
   } catch (error) {
-    res.status(500).json({ error: 'Erro ao criar usuário' });
+    console.error(error);
+    res.status(500).json({ error: 'Erro ao criar usuário.' });
+  }
+};
+
+// Fazer login de um usuário
+export const userLogin = async (req, res) => {
+  const { email, senha } = req.body;
+
+  try {
+    // Verifica se o usuário existe
+    const user = await prisma.user.findUnique({
+      where: { email },
+    });
+
+    if (!user) {
+      return res.status(404).json({ error: 'Usuário não encontrado.' });
+    }
+
+    // Verifica se a senha está correta
+    const isPasswordValid = await bcrypt.compare(senha, user.senha);
+
+    if (!isPasswordValid) {
+      return res.status(401).json({ error: 'Senha incorreta!' });
+    }
+
+    // Gera o token JWT
+    const token = jwt.sign({
+      id: user.id, email: user.email
+    }, 
+      SECRET_KEY,{
+      expiresIn: '1h', // Expira em 1 hora
+    }
+  );
+
+    res.json({ message: 'Login bem-sucedido.', token });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Erro ao fazer login.' });
   }
 };
 
