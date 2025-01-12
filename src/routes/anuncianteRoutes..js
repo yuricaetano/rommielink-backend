@@ -1,4 +1,4 @@
-import express from 'express';
+import {Router} from 'express';
 import {
   createAnunciante,
   getAnuncianteById,
@@ -6,7 +6,7 @@ import {
   deleteAnunciante,
 } from '../controllers/anuncianteController.js';
 
-const router = express.Router();
+const router = Router();
 
 // Rotas do anunciante
 router.post('/', createAnunciante);
