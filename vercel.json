@@ -11,5 +11,8 @@
             "src": "(.*)",
             "dest": "src/index.js"
         }
-    ]
+    ],
+    "env": {
+        "SECRET_KEY": "minha_chave_super_secreta_aleatoria"
+      }
 }
