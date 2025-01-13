@@ -1,4 +1,5 @@
 import express from 'express';
+import authMiddleware from '../middlewares/authMiddleware';
 import {
   createPreferencias,
   updatePreferencias,
@@ -8,12 +9,12 @@ import {
 const router = express.Router();
 
 // Criar preferências para um estudante
-router.post('/estudante/:estudanteId/preferencias', createPreferencias);
+router.post('/estudante/:estudanteId/preferencias', authMiddleware, createPreferencias);
 
 // Atualizar preferências de um estudante
-router.put('/preferencias/:id', updatePreferencias);
+router.put('/preferencias/:id', authMiddleware, updatePreferencias);
 
 // Buscar preferências por ID do Estudante
-router.get('/estudante/:estudanteId/preferencias', getPreferenciasByEstudanteId);
+router.get('/estudante/:estudanteId/preferencias', authMiddleware, getPreferenciasByEstudanteId);
 
 export default router;

@@ -19,7 +19,16 @@ export const createEstudante = async (req, res) => {
   } = req.body;
 
   try {
-    console.log("Dados recebidos:", req.body);
+    // console.log("Dados recebidos:", req.body);
+
+    // Verificar se o CPF já está registrado
+    const existingEstudante = await prisma.estudante.findUnique({
+      where: { cpf },
+    });
+
+    if (existingEstudante) {
+      return res.status(400).json({ error: 'CPF já registrado.' });
+    }
 
     // Validação do campo tipoConvivencia em cada preferência
     const validValues = ["Independente", "Moderada", "Compartilhada"];

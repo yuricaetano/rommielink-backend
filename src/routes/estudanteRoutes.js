@@ -1,4 +1,5 @@
 import {Router} from 'express';
+import authMiddleware from '../middlewares/authMiddleware'; // Importa o middleware de autenticação
 import{
     getAllEstudantes,
     getEstudanteByIdDetalhado,
@@ -9,10 +10,10 @@ import{
 
 const router = Router();
 
-router.get('/', getAllEstudantes);
-router.get('/:id', getEstudanteByIdDetalhado);
-router.post('/', createEstudante);
-router.put('/:id', updateEstudante);
-router.delete('/:id', deleteEstudante);
+router.get('/', authMiddleware, getAllEstudantes);
+router.get('/:id', authMiddleware, getEstudanteByIdDetalhado);
+router.post('/', authMiddleware, createEstudante);
+router.put('/:id', authMiddleware, updateEstudante);
+router.delete('/:id', authMiddleware, deleteEstudante);
 
 export default router;
