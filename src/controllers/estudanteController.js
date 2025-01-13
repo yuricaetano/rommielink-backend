@@ -14,7 +14,8 @@ export const createEstudante = async (req, res) => {
     curso, 
     cpf, 
     rg, 
-    userId, 
+    userId,
+    cidade,
     preferencias 
   } = req.body;
 
@@ -51,6 +52,7 @@ export const createEstudante = async (req, res) => {
         cpf,
         rg,
         userId,
+        cidade,
         preferencias: {
           create: preferencias.map((pref) => ({
             genero_moradores: pref.genero_moradores,
@@ -94,7 +96,6 @@ export const createEstudante = async (req, res) => {
     res.status(500).json({ error: 'Erro ao criar estudante' });
   }
 };
-
 
 export const updateEstudante = async (req, res) => {
   const { id } = req.params;
@@ -145,17 +146,58 @@ export const deleteEstudante = async (req, res) => {
 };
 
 export const getAllEstudantes = async (req, res) => {
-    try {
-      const estudantes = await prisma.estudante.findMany({
-        include: { user: true }, // Inclui informações do usuário relacionado
-      });
-      if (estudantes.length === 0) {
-        return res.status(404).json({ error: 'Nenhum estudante encontrado' });
-      }
-      res.status(200).json(estudantes);
-    } catch (error) {
-      res.status(500).json({ error: 'Erro ao buscar estudantes.' });
+  const page = parseInt(req.query.page) || 1; // Página padrão é 1
+  const limit = parseInt(req.query.limit) || 10; // Limite padrão é 10 estudantes por página
+  const skip = (page - 1) * limit; // Calcula o número de estudantes a serem pulados
+  const cidade = req.query.cidade || ''; // Filtro de cidade, se fornecido
+
+  try {
+    // Busca estudantes com paginação e filtro por cidade
+    const estudantes = await prisma.estudante.findMany({
+      where: {
+        endereco: {
+          cidade: {
+            contains: cidade, // Filtro de cidade (substring match)
+            mode: 'insensitive', // Busca case-insensitive
+          },
+        },
+      },
+      include: {
+        user: true, // Inclui informações do usuário relacionado
+        endereco: true, // Inclui informações do endereço relacionado
+      },
+      skip,
+      take: limit,
+    });
+
+    // Conta o número total de estudantes
+    const totalEstudantes = await prisma.estudante.count({
+      where: {
+        endereco: {
+          cidade: {
+            contains: cidade,
+            mode: 'insensitive',
+          },
+        },
+      },
+    });
+
+    const totalPages = Math.ceil(totalEstudantes / limit); // Total de páginas
+
+    if (estudantes.length === 0) {
+      return res.status(404).json({ error: 'Nenhum estudante encontrado' });
     }
+
+    res.status(200).json({
+      estudantes,
+      currentPage: page,
+      totalPages,
+      totalEstudantes,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Erro ao buscar estudantes.' });
+  }
 };
 
 export const getEstudanteByIdDetalhado = async (req, res) => {

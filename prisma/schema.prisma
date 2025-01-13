@@ -33,9 +33,11 @@ model Estudante {
   curso String @default("")
   cpf String @unique
   rg String @unique
+  cidade String?
   userId String @unique
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
   preferencias Preferencias[]
+
 }
 
 enum TipoConvivencia {
