@@ -155,16 +155,13 @@ export const getAllEstudantes = async (req, res) => {
     // Busca estudantes com paginação e filtro por cidade
     const estudantes = await prisma.estudante.findMany({
       where: {
-        endereco: {
-          cidade: {
-            contains: cidade, // Filtro de cidade (substring match)
-            mode: 'insensitive', // Busca case-insensitive
-          },
+        cidade: {
+          contains: cidade, // Filtro de cidade (substring match)
+          mode: 'insensitive', // Busca case-insensitive
         },
       },
       include: {
         user: true, // Inclui informações do usuário relacionado
-        endereco: true, // Inclui informações do endereço relacionado
       },
       skip,
       take: limit,
@@ -173,11 +170,9 @@ export const getAllEstudantes = async (req, res) => {
     // Conta o número total de estudantes
     const totalEstudantes = await prisma.estudante.count({
       where: {
-        endereco: {
-          cidade: {
-            contains: cidade,
-            mode: 'insensitive',
-          },
+        cidade: {
+          contains: cidade,
+          mode: 'insensitive',
         },
       },
     });
@@ -199,6 +194,7 @@ export const getAllEstudantes = async (req, res) => {
     res.status(500).json({ error: 'Erro ao buscar estudantes.' });
   }
 };
+
 
 export const getEstudanteByIdDetalhado = async (req, res) => {
   const { id } = req.params;
