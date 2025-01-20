@@ -76,6 +76,25 @@ model Anunciante {
   @@map("anunciante") // Mapeia para a tabela com nome em minúsculo
 }
 
+enum TipoMoradia {
+  Casa
+  Apartamento
+  Kitnet
+  Republica
+}
+
+enum TipoQuarto {
+  quartoIndividual
+  quartoCompartilhado
+  espacoInteiro
+}
+
+enum SexoMorador {
+  Masculino
+  Feminino
+  Mistas
+}
+
 model Imovel {
   id String @id @default(uuid())
   tipoImovel String
@@ -86,10 +105,16 @@ model Imovel {
   periodoMinimoLocacao String
   descricao String
   fotoImovel String
+  wifi Boolean
+  arCondicionado Boolean
+  manutencao Boolean
+  aceitaVisita Boolean
+  tipoMoradia TipoMoradia
+  sexoMorador SexoMorador
   anuncianteId String
   anunciante Anunciante @relation(fields: [anuncianteId], references: [id], onDelete: Cascade)
   proximidades Proximidades[]
-  endereco Endereco?
+  endereco Endereco[]
 }
 
 model Proximidades {
