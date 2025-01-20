@@ -70,9 +70,9 @@ model Preferencias {
 model Anunciante {
   id String @id @default(uuid())
   userId String @unique
+  fotoPerfil String
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
   imovel Imovel[]
-
   @@map("anunciante") // Mapeia para a tabela com nome em minúsculo
 }
 
