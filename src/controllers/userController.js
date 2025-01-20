@@ -30,7 +30,7 @@ export const createUser = async (req, res) => {
       data: {
         nome,
         email,
-        senha: hashedSenha, // Salvar senha criptografada
+        senha: hashedSenha,
         telefone,
         dataNascimento,
         nomeUsuario,
