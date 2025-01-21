@@ -12,6 +12,11 @@ const authMiddleware = (req, res, next) => {
     // Verifica se o token é válido
     const decoded = jwt.verify(token, process.env.SECRET_KEY);
 
+    // Verifica se o usuário é um anunciante
+    if (decoded.tipo !== 'anunciante') {
+      return res.status(403).json({ message: "Acesso restrito a anunciantes" });
+    }
+
     // Adiciona as informações do usuário (decodificadas do token) à requisição
     req.user = decoded;
 
