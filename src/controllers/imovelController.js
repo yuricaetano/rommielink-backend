@@ -66,7 +66,7 @@ export const getImoveisPorFiltros = async (req, res) => {
       tipoMoradia,
       wifi,
       sexoMorador,
-      proximidades, // Filtro por proximidades (array de strings)
+      proximidades,
     } = req.query;
   
     try {

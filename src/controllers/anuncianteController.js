@@ -67,6 +67,8 @@ export const criarImovel = async (req, res) => {
       aceitaVisita,
       tipoMoradia,
       sexoMorador,
+      proximidades,
+      endereco
     } = req.body;
   
     try {
@@ -96,6 +98,12 @@ export const criarImovel = async (req, res) => {
           tipoMoradia,
           sexoMorador,
           anuncianteId: anunciante.id,
+          proximidades: {
+            create: proximidades,
+          },
+          endereco: {
+            create: endereco,
+          },
         },
       });
   
