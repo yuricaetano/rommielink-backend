@@ -4,14 +4,14 @@ import {
   listarImoveisDoAnunciante,
   criarImovel,
 } from "../controllers/anuncianteController.js";
-import { authenticate } from "../middlewares/authMiddleware.js";
+import authMiddleware  from "../middlewares/authMiddleware.js";
 
 const router = Router();
 // Torna o usuário um anunciante
-router.post("/", authenticate, tornarAnunciante);
+router.post("/", authMiddleware, tornarAnunciante);
 // Lista todos os imóveis do anunciante autenticado
-router.get("/imovel", authenticate, listarImoveisDoAnunciante);
+router.get("/imovel", authMiddleware, listarImoveisDoAnunciante);
 // Cria um novo imóvel para o anunciante autenticado
-router.post("/imovel", authenticate, criarImovel);
+router.post("/imovel", authMiddleware, criarImovel);
 
 export default router;

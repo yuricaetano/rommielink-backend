@@ -9,11 +9,15 @@ const SALT_ROUNDS = 10;
 // Configuração do JWT
 const SECRET_KEY = process.env.SECRET_KEY;
 
-// Criar um novo usuário
 export const createUser = async (req, res) => {
-  const { nome, email, senha, telefone, dataNascimento, nomeUsuario } = req.body;
+  const { nome, email, senha, confirmarSenha, telefone, dataNascimento, nomeUsuario } = req.body;
 
   try {
+    // Verificar se as senhas coincidem
+    if (senha !== confirmarSenha) {
+      return res.status(400).json({ error: 'As senhas não coincidem.' });
+    }
+
     // Verificar se o email já existe
     const usuarioExistente = await prisma.user.findUnique({
       where: { email },
@@ -42,7 +46,11 @@ export const createUser = async (req, res) => {
     console.error(error);
     res.status(500).json({ error: 'Erro ao criar usuário.' });
   }
+  console.log("Dados recebidos:", req.body);
+  console.log("Verificando se o email já existe...");
+
 };
+
 
 // Fazer login de um usuário
 export const userLogin = async (req, res) => {
@@ -79,6 +87,14 @@ export const userLogin = async (req, res) => {
     console.error(error);
     res.status(500).json({ error: 'Erro ao fazer login.' });
   }
+};
+
+const invalidTokens = [];
+
+export const userLogout = async (req, res) => {
+  const token = req.headers['authorization']?.split(' ')[1];
+  invalidTokens.push(token);
+  res.json({ message: 'Logout bem-sucedido.' });
 };
 
 // Obter um usuário por ID

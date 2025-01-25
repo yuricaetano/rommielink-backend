@@ -8,6 +8,10 @@ const authMiddleware = (req, res, next) => {
     return res.status(401).json({ message: "Token não fornecido" });
   }
 
+  if (invalidTokens.includes(token)) {
+    return res.status(403).json({ message: 'Token inválido' });
+  }
+
   try {
     // Verifica se o token é válido
     const decoded = jwt.verify(token, process.env.SECRET_KEY);

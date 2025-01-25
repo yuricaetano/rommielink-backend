@@ -5,7 +5,8 @@ import {
   getUserById, 
   updateUser,
   deleteUser,
-  userLogin 
+  userLogin,
+  userLogout
 } from '../controllers/userController.js';
 import authMiddleware from '../middlewares/authMiddleware.js';
 
@@ -18,6 +19,7 @@ router.post('/login', userLogin);
 // Rotas protegidas com JWT
 router.use(authMiddleware); // Aplica o middleware a partir daqui
 
+router.post('/logout', authMiddleware, userLogout);
 router.get('/', getAllUsers);
 router.get('/:id', getUserById);
 router.put('/:id', updateUser);

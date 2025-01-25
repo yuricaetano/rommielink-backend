@@ -6,14 +6,16 @@ import{
     updateEstudante,
     deleteEstudante
 } from '../controllers/estudanteController.js';
-import {authenticate} from '../middlewares/authMiddleware';
+import authMiddleware from '../middlewares/authMiddleware.js';
 
 const router = Router();
 
-router.get('/', authenticate, getAllEstudantes);
-router.get('/:id', authenticate, getEstudanteByIdDetalhado);
-router.post('/', authenticate, createEstudante);
-router.put('/:id', authenticate,updateEstudante);
-router.delete('/:id', authenticate,deleteEstudante);
+router.use(authMiddleware);
+
+router.get('/', getAllEstudantes);
+router.get('/:id', getEstudanteByIdDetalhado);
+router.post('/', authMiddleware, createEstudante);
+router.put('/:id', authMiddleware,updateEstudante);
+router.delete('/:id', authMiddleware,deleteEstudante);
 
 export default router;

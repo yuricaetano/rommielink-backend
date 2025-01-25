@@ -5,6 +5,7 @@ import preferenciasRoutes from "./routes/preferenciasRoutes.js";
 import proximidadesRoutes from "./routes/proximidadesRoutes.js";
 import anuncianteRoutes from "./routes/anuncianteRoutes.js";
 import imovelRoutes from "./routes/imovelRoutes.js";
+import cors from "cors";
 
 const app = express();
 
@@ -15,6 +16,7 @@ app.use("/api/preferencias", preferenciasRoutes);
 app.use("/api/proximidades", proximidadesRoutes);
 app.use("/api/anunciante", anuncianteRoutes);
 app.use("/api/imovel", imovelRoutes);
+app.use(cors());
 
 // app.listen(3000, () => console.log("Servidor rodando na porta 3000"));
 
