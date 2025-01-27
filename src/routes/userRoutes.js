@@ -15,14 +15,12 @@ const router = Router();
 // Rotas públicas
 router.post('/', createUser);
 router.post('/login', userLogin);
-
-// Rotas protegidas com JWT
-router.use(authMiddleware);
-
-router.post('/logout', authMiddleware, userLogout);
 router.get('/', getAllUsers);
 router.get('/:id', getUserById);
-router.put('/:id', updateUser);
-router.delete('/:id', deleteUser);
+
+// Rotas protegidas com JWT
+router.post('/logout', authMiddleware, userLogout);
+router.put('/:id', authMiddleware, updateUser);
+router.delete('/:id', authMiddleware, deleteUser);
 
 export default router;

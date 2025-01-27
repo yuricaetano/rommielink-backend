@@ -10,8 +10,6 @@ import authMiddleware from '../middlewares/authMiddleware.js';
 
 const router = Router();
 
-router.use(authMiddleware);
-
 router.get('/', getAllEstudantes);
 router.get('/:id', getEstudanteByIdDetalhado);
 router.post('/', authMiddleware, createEstudante);
