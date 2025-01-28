@@ -16,8 +16,12 @@ app.use("/api/preferencias", preferenciasRoutes);
 app.use("/api/proximidades", proximidadesRoutes);
 app.use("/api/anunciante", anuncianteRoutes);
 app.use("/api/imovel", imovelRoutes);
-app.use(cors());
+app.use(cors({
+    origin: "http://localhost:3000", // Permite apenas o frontend local
+    methods: ['GET', 'POST', 'PUT', 'DELETE'], // Métodos permitidos
+    allowedHeaders: ['Content-Type', 'Authorization'], // Cabeçalhos permitidos
+  }));
 
-// app.listen(3000, () => console.log("Servidor rodando na porta 3000"));
+app.listen(3001, () => console.log("Servidor rodando na porta 3001"));
 
 export default app;
