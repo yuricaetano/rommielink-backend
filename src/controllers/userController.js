@@ -42,6 +42,7 @@ export const createUser = async (req, res) => {
       },
     });
 
+    console.log("Gerando token com os dados:", { id: newUser.id, email: newUser.email });
     const token = jwt.sign({id: newUser.id, email: newUser.email}, SECRET_KEY,{expiresIn: '1h',});
     console.log(`Token gerado: ${token}`);
 
@@ -53,6 +54,14 @@ export const createUser = async (req, res) => {
       },
     });
 
+    transporter.verify((error, success) => {
+      if (error) {
+        console.error("Erro ao configurar o transporter:", error.message);
+      } else {
+        console.log("Transporter configurado com sucesso!");
+      }
+    });
+
     const mailOptions = {
       from: process.env.EMAIL_ACADEMICO,
       to: email,
@@ -61,11 +70,12 @@ export const createUser = async (req, res) => {
       https://rommielink-backend-git-main-yuris-projects-98f41e79.vercel.app/api/user/confirmar-email?token=${token}`,
     };
 
-    await transporter.sendMail(mailOptions);
+    // await transporter.sendMail(mailOptions);
 
     res.status(201).json(newUser);
   } catch (error) {
     console.error("Erro ao criar usuário:", error.message);
+    console.error("Stack trace:", error.stack);
     res.status(500).json({ error: 'Erro ao criar usuário.' });
   }
   // console.log("Dados recebidos:", req.body);
