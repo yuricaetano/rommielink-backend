@@ -29,8 +29,6 @@ export const createUser = async (req, res) => {
     // Criptografar a senha
     const hashedSenha = await bcrypt.hash(senha, SALT_ROUNDS);
 
-    const token = jwt.sign({id: user.id, email: user.email}, SECRET_KEY,{expiresIn: '1h',});
-
     // Criar o usuário no banco
     const newUser = await prisma.user.create({
       data: {
@@ -44,6 +42,9 @@ export const createUser = async (req, res) => {
       },
     });
 
+    const token = jwt.sign({id: user.id, email: user.email}, SECRET_KEY,{expiresIn: '1h',});
+    console.log(`Token gerado: ${token}`);
+
     const transporter = nodemailer.createTransport({
       service: 'gmail',
       auth: {
@@ -53,7 +54,7 @@ export const createUser = async (req, res) => {
     });
 
     const mailOptions = {
-      from: 'seuemail@gmail.com',
+      from: process.env.EMAIL_ACADEMICO,
       to: email,
       subject: 'Confirme seu E-mail',
       text: `Olá ${nome}, clique no link abaixo para confirmar seu e-mail:
