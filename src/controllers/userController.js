@@ -42,7 +42,7 @@ export const createUser = async (req, res) => {
       },
     });
 
-    const token = jwt.sign({id: user.id, email: user.email}, SECRET_KEY,{expiresIn: '1h',});
+    const token = jwt.sign({id: newUser.id, email: newUser.email}, SECRET_KEY,{expiresIn: '1h',});
     console.log(`Token gerado: ${token}`);
 
     const transporter = nodemailer.createTransport({
