@@ -9,6 +9,12 @@ import cors from "cors";
 
 const app = express();
 
+app.use(cors({
+  origin: "http://localhost:3000", // Permite apenas o frontend local
+  methods: ['GET', 'POST', 'PUT', 'DELETE'], // Métodos permitidos
+  allowedHeaders: ['Content-Type', 'Authorization'], // Cabeçalhos permitidos
+}));
+
 app.use(express.json());
 app.use("/api/user", userRoutes); // Prefixo para as rotas de usuário
 app.use("/api/estudante", estudanteRoutes);
@@ -16,11 +22,6 @@ app.use("/api/preferencias", preferenciasRoutes);
 app.use("/api/proximidades", proximidadesRoutes);
 app.use("/api/anunciante", anuncianteRoutes);
 app.use("/api/imovel", imovelRoutes);
-app.use(cors({
-    origin: "http://localhost:3000", // Permite apenas o frontend local
-    methods: ['GET', 'POST', 'PUT', 'DELETE'], // Métodos permitidos
-    allowedHeaders: ['Content-Type', 'Authorization'], // Cabeçalhos permitidos
-  }));
 
 app.listen(3001, () => console.log("Servidor rodando na porta 3001"));
 
