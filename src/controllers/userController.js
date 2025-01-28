@@ -29,6 +29,8 @@ export const createUser = async (req, res) => {
     // Criptografar a senha
     const hashedSenha = await bcrypt.hash(senha, SALT_ROUNDS);
 
+    const token = jwt.sign({id: user.id, email: user.email}, SECRET_KEY,{expiresIn: '1h',});
+
     // Criar o usuário no banco
     const newUser = await prisma.user.create({
       data: {
@@ -38,8 +40,27 @@ export const createUser = async (req, res) => {
         telefone,
         dataNascimento,
         nomeUsuario,
+        emailConfirmado: false,
       },
     });
+
+    const transporter = nodemailer.createTransport({
+      service: 'gmail',
+      auth: {
+        user: process.env.EMAIL_ACADEMICO,
+        pass: process.env.EMAIL_PASSWORD,
+      },
+    });
+
+    const mailOptions = {
+      from: 'seuemail@gmail.com',
+      to: email,
+      subject: 'Confirme seu E-mail',
+      text: `Olá ${nome}, clique no link abaixo para confirmar seu e-mail:
+      https://seusite.com/confirmar-email?token=${token}`,
+    };
+
+    await transporter.sendMail(mailOptions);
 
     res.status(201).json(newUser);
   } catch (error) {
@@ -49,6 +70,26 @@ export const createUser = async (req, res) => {
   console.log("Dados recebidos:", req.body);
   console.log("Verificando se o email já existe...");
 
+};
+
+export const confirmarEmail = async (req, res) => {
+  const { token } = req.query;
+
+  try {
+    // Decodificar o token
+    const { email } = jwt.verify(token, SECRET_KEY);
+
+    // Atualizar o status do e-mail no banco de dados
+    const user = await prisma.user.update({
+      where: { email },
+      data: { emailConfirmado: true },
+    });
+
+    res.status(200).json({ message: 'E-mail confirmado com sucesso!' });
+  } catch (error) {
+    console.error(error);
+    res.status(400).json({ error: 'Token inválido ou expirado.' });
+  }
 };
 
 

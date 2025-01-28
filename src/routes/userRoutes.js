@@ -1,7 +1,8 @@
 import { Router } from 'express';
 import { 
   getAllUsers, 
-  createUser, 
+  createUser,
+  confirmarEmail, 
   getUserById, 
   updateUser,
   deleteUser,
@@ -14,6 +15,7 @@ const router = Router();
 
 // Rotas públicas
 router.post('/', createUser);
+router.get('/confirmar-email', confirmarEmail);
 router.post('/login', userLogin);
 router.get('/', getAllUsers);
 router.get('/:id', getUserById);
