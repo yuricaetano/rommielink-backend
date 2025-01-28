@@ -17,6 +17,7 @@ model User {
   dataCriacao DateTime @default(now()) //dataCadastro
   updatedAt DateTime @updatedAt
   nomeUsuario String @unique
+  emailConfirmado Boolean  @default(false)
   estudante Estudante?
   anunciante Anunciante?
 }
