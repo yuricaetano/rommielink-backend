@@ -57,7 +57,7 @@ export const createUser = async (req, res) => {
       to: email,
       subject: 'Confirme seu E-mail',
       text: `Olá ${nome}, clique no link abaixo para confirmar seu e-mail:
-      https://seusite.com/confirmar-email?token=${token}`,
+      https://rommielink-backend-git-main-yuris-projects-98f41e79.vercel.app/api/user/confirmar-email?token=${token}`,
     };
 
     await transporter.sendMail(mailOptions);
