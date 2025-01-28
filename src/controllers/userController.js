@@ -46,29 +46,21 @@ export const createUser = async (req, res) => {
     const token = jwt.sign({id: newUser.id, email: newUser.email}, SECRET_KEY,{expiresIn: '1h',});
     console.log(`Token gerado: ${token}`);
 
-    const transporter = nodemailer.createTransport({
-      service: 'gmail',
-      auth: {
-        user: process.env.EMAIL_ACADEMICO,
-        pass: process.env.EMAIL_PASSWORD,
-      },
-    });
+    // const transporter = nodemailer.createTransport({
+    //   service: 'gmail',
+    //   auth: {
+    //     user: process.env.EMAIL_ACADEMICO,
+    //     pass: process.env.EMAIL_PASSWORD,
+    //   },
+    // });
 
-    transporter.verify((error, success) => {
-      if (error) {
-        console.error("Erro ao configurar o transporter:", error.message);
-      } else {
-        console.log("Transporter configurado com sucesso!");
-      }
-    });
-
-    const mailOptions = {
-      from: process.env.EMAIL_ACADEMICO,
-      to: email,
-      subject: 'Confirme seu E-mail',
-      text: `Olá ${nome}, clique no link abaixo para confirmar seu e-mail:
-      https://rommielink-backend-git-main-yuris-projects-98f41e79.vercel.app/api/user/confirmar-email?token=${token}`,
-    };
+    // const mailOptions = {
+    //   from: process.env.EMAIL_ACADEMICO,
+    //   to: email,
+    //   subject: 'Confirme seu E-mail',
+    //   text: `Olá ${nome}, clique no link abaixo para confirmar seu e-mail:
+    //   https://rommielink-backend-git-main-yuris-projects-98f41e79.vercel.app/api/user/confirmar-email?token=${token}`,
+    // };
 
     // await transporter.sendMail(mailOptions);
 
