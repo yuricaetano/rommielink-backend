@@ -38,13 +38,14 @@ export const createUser = async (req, res) => {
         telefone,
         dataNascimento,
         nomeUsuario,
-        emailConfirmado: false,
+        // emailConfirmado: false,
       },
     });
 
-    console.log("Gerando token com os dados:", { id: newUser.id, email: newUser.email });
+    console.log("Usuário criado:", { id: newUser.id, email: newUser.email });
+    // console.log("Gerando token com os dados:", { id: newUser.id, email: newUser.email });
     const token = jwt.sign({id: newUser.id, email: newUser.email}, SECRET_KEY,{expiresIn: '1h',});
-    console.log(`Token gerado: ${token}`);
+    // console.log(`Token gerado: ${token}`);
 
     // const transporter = nodemailer.createTransport({
     //   service: 'gmail',
@@ -75,25 +76,24 @@ export const createUser = async (req, res) => {
 
 };
 
-export const confirmarEmail = async (req, res) => {
-  const { token } = req.query;
+// export const confirmarEmail = async (req, res) => {
+//   const { token } = req.query;
 
-  try {
-    // Decodificar o token
-    const { email } = jwt.verify(token, SECRET_KEY);
+//   try {
 
-    // Atualizar o status do e-mail no banco de dados
-    const user = await prisma.user.update({
-      where: { email },
-      data: { emailConfirmado: true },
-    });
+//     const { email } = jwt.verify(token, SECRET_KEY);
 
-    res.status(200).json({ message: 'E-mail confirmado com sucesso!' });
-  } catch (error) {
-    console.error(error);
-    res.status(400).json({ error: 'Token inválido ou expirado.' });
-  }
-};
+//     const user = await prisma.user.update({
+//       where: { email },
+//       data: { emailConfirmado: true },
+//     });
+
+//     res.status(200).json({ message: 'E-mail confirmado com sucesso!' });
+//   } catch (error) {
+//     console.error(error);
+//     res.status(400).json({ error: 'Token inválido ou expirado.' });
+//   }
+// };
 
 
 // Fazer login de um usuário
