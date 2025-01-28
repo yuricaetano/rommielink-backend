@@ -65,11 +65,11 @@ export const createUser = async (req, res) => {
 
     res.status(201).json(newUser);
   } catch (error) {
-    console.error(error);
+    console.error("Erro ao criar usuário:", error.message);
     res.status(500).json({ error: 'Erro ao criar usuário.' });
   }
-  console.log("Dados recebidos:", req.body);
-  console.log("Verificando se o email já existe...");
+  // console.log("Dados recebidos:", req.body);
+  // console.log("Verificando se o email já existe...");
 
 };
 
