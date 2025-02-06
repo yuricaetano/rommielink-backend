@@ -10,14 +10,13 @@ datasource db {
 model User {
   id String @id @default(uuid())
   nome String
+  sobrenome String @default("Não informado")
   email String @unique
   senha String
   telefone String
   dataNascimento String
   dataCriacao DateTime @default(now()) //dataCadastro
   updatedAt DateTime @updatedAt
-  nomeUsuario String @unique
-  // emailConfirmado Boolean  @default(false)
   estudante Estudante?
   anunciante Anunciante?
 }
@@ -63,7 +62,7 @@ model Preferencias {
   maiorQualidade  String?
   piorDefeito String?
   principalFatorMoradia String?
-  proximidades Proximidades[]
+  // proximidades Proximidades[]
   estudanteId String
   estudante Estudante @relation(fields: [estudanteId], references: [id], onDelete: Cascade)
 }
@@ -85,15 +84,27 @@ enum TipoMoradia {
 }
 
 enum TipoQuarto {
-  quartoIndividual
-  quartoCompartilhado
-  espacoInteiro
+  QuartoIndividual
+  QuartoCompartilhado
+  EspacoInteiro
 }
 
 enum SexoMorador {
   Masculino
   Feminino
   Mistas
+}
+
+enum TipoAnunciante {
+  CompanheiroQuarto
+  Proprietario
+  Imobiliaria
+}
+
+enum RestricaoGenero {
+  Masculino
+  Feminino
+  NaoImporta
 }
 
 model Imovel {
@@ -110,12 +121,31 @@ model Imovel {
   arCondicionado Boolean
   manutencao Boolean
   aceitaVisita Boolean
+  aceitaFumante Boolean
+  acetaAnimal Boolean
   tipoMoradia TipoMoradia
   sexoMorador SexoMorador
+  possuiMoradores Boolean @default(false)
+  tipoAnunciante TipoAnunciante
+  moraNaPropriedade Boolean? // Se for proprietário, pode indicar se mora ou não
+  restricaoGenero RestricaoGenero
   anuncianteId String
   anunciante Anunciante @relation(fields: [anuncianteId], references: [id], onDelete: Cascade)
   proximidades Proximidades[]
   endereco Endereco[]
+  moradores Morador[]
+}
+
+model Morador {
+  id String @id @default(uuid())
+  idadeMinima Int
+  idadeMaxima Int
+  genero SexoMorador
+  curso String
+  instituicao String
+  idiomas String[]
+  imovelId String
+  imovel Imovel @relation(fields: [imovelId], references: [id], onDelete: Cascade)
 }
 
 model Proximidades {
@@ -136,7 +166,7 @@ model Proximidades {
   Areas_Verdes Boolean
   preferenciaId String
   imovel Imovel? @relation(fields: [imovelId], references: [id], onDelete: Cascade)
-  preferencia Preferencias @relation(fields: [preferenciaId], references: [id], onDelete: Cascade)
+  // preferencia Preferencias @relation(fields: [preferenciaId], references: [id], onDelete: Cascade)
 }
 
 model Endereco{

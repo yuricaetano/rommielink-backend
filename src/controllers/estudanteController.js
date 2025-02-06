@@ -20,8 +20,6 @@ export const createEstudante = async (req, res) => {
   } = req.body;
 
   try {
-    // console.log("Dados recebidos:", req.body);
-
     // Verificar se o CPF já está registrado
     const existingEstudante = await prisma.estudante.findUnique({
       where: { cpf },
@@ -69,23 +67,6 @@ export const createEstudante = async (req, res) => {
             maiorQualidade: pref.maiorQualidade,
             piorDefeito: pref.piorDefeito,
             principalFatorMoradia: pref.principalFatorMoradia,
-            proximidades: {
-              create: pref.proximidades.map((prox) => ({
-                universidade: prox.universidade,
-                academia: prox.academia,
-                hospital: prox.hospital,
-                farmacia: prox.farmacia,
-                mercado: prox.mercado,
-                shopping: prox.shopping,
-                postoGasolina: prox.postoGasolina,
-                agenciaBancaria: prox.agenciaBancaria,
-                pontoOnibus: prox.pontoOnibus,
-                estacaoMetro: prox.estacaoMetro,
-                Policiamento: prox.Policiamento,
-                Lazer_Cultura: prox.Lazer_Cultura,
-                Areas_Verdes: prox.Areas_Verdes,
-              }))
-            }
           }))
         }
       },
@@ -156,8 +137,8 @@ export const getAllEstudantes = async (req, res) => {
     const estudantes = await prisma.estudante.findMany({
       where: {
         cidade: {
-          contains: cidade, // Filtro de cidade (substring match)
-          mode: 'insensitive', // Busca case-insensitive
+          contains: cidade,
+          mode: 'insensitive',
         },
       },
       include: {
@@ -167,7 +148,6 @@ export const getAllEstudantes = async (req, res) => {
       take: limit,
     });
 
-    // Conta o número total de estudantes
     const totalEstudantes = await prisma.estudante.count({
       where: {
         cidade: {
@@ -177,7 +157,7 @@ export const getAllEstudantes = async (req, res) => {
       },
     });
 
-    const totalPages = Math.ceil(totalEstudantes / limit); // Total de páginas
+    const totalPages = Math.ceil(totalEstudantes / limit);
 
     if (estudantes.length === 0) {
       return res.status(404).json({ error: 'Nenhum estudante encontrado' });
@@ -202,11 +182,7 @@ export const getEstudanteByIdDetalhado = async (req, res) => {
     const estudante = await prisma.estudante.findUnique({
       where: { id },
       include: { 
-        preferencias:{ // Inclui informações de preferencias relacionado
-          include: {
-            proximidades: true // Inclui informações de proximidades relacionado
-          },
-        }
+        preferencias: true
       },
     });
     if (!estudante) {

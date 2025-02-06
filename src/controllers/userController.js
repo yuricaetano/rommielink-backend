@@ -10,7 +10,7 @@ const SALT_ROUNDS = 10;
 const SECRET_KEY = process.env.SECRET_KEY;
 
 export const createUser = async (req, res) => {
-  const { nome, email, senha, confirmarSenha, telefone, dataNascimento, nomeUsuario } = req.body;
+  const { nome, sobrenome, email, senha, confirmarSenha, telefone, dataNascimento,} = req.body;
 
   try {
     // Verificar se as senhas coincidem
@@ -33,37 +33,16 @@ export const createUser = async (req, res) => {
     const newUser = await prisma.user.create({
       data: {
         nome,
+        sobrenome,
         email,
         senha: hashedSenha,
         telefone,
         dataNascimento,
-        nomeUsuario,
-        // emailConfirmado: false,
       },
     });
 
     console.log("Usuário criado:", { id: newUser.id, email: newUser.email });
-    // console.log("Gerando token com os dados:", { id: newUser.id, email: newUser.email });
     const token = jwt.sign({id: newUser.id, email: newUser.email}, SECRET_KEY,{expiresIn: '1h',});
-    // console.log(`Token gerado: ${token}`);
-
-    // const transporter = nodemailer.createTransport({
-    //   service: 'gmail',
-    //   auth: {
-    //     user: process.env.EMAIL_ACADEMICO,
-    //     pass: process.env.EMAIL_PASSWORD,
-    //   },
-    // });
-
-    // const mailOptions = {
-    //   from: process.env.EMAIL_ACADEMICO,
-    //   to: email,
-    //   subject: 'Confirme seu E-mail',
-    //   text: `Olá ${nome}, clique no link abaixo para confirmar seu e-mail:
-    //   https://rommielink-backend-git-main-yuris-projects-98f41e79.vercel.app/api/user/confirmar-email?token=${token}`,
-    // };
-
-    // await transporter.sendMail(mailOptions);
 
     res.status(201).json(newUser);
   } catch (error) {
@@ -71,30 +50,8 @@ export const createUser = async (req, res) => {
     console.error("Stack trace:", error.stack);
     res.status(500).json({ error: 'Erro ao criar usuário.' });
   }
-  // console.log("Dados recebidos:", req.body);
-  // console.log("Verificando se o email já existe...");
 
 };
-
-// export const confirmarEmail = async (req, res) => {
-//   const { token } = req.query;
-
-//   try {
-
-//     const { email } = jwt.verify(token, SECRET_KEY);
-
-//     const user = await prisma.user.update({
-//       where: { email },
-//       data: { emailConfirmado: true },
-//     });
-
-//     res.status(200).json({ message: 'E-mail confirmado com sucesso!' });
-//   } catch (error) {
-//     console.error(error);
-//     res.status(400).json({ error: 'Token inválido ou expirado.' });
-//   }
-// };
-
 
 // Fazer login de um usuário
 export const userLogin = async (req, res) => {
@@ -173,11 +130,11 @@ export const getAllUsers = async (req, res) => {
 // Atualizar um usuário por ID
 export const updateUser = async (req, res) => {
   const { id } = req.params;
-  const { nome, email, senha, } = req.body;
+  const { nome, sobrenome, email, senha, } = req.body;
   try {
     const updatedUser = await prisma.user.update({
       where: { id: id },
-      data: { nome, email, senha, telefone, dataNascimento, nomeUsuario },
+      data: { nome, sobrenome, email, senha, telefone, dataNascimento, },
     });
     res.status(200).json(updatedUser);
   } catch (error) {
