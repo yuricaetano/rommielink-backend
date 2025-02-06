@@ -1,199 +1,60 @@
 import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
 
-// Criar um novo imóvel
-export const createImovel = async (req, res) => {
-  const {
-    tipoQuarto,
-    status,
-    valorAluguel,
-    periodoMaximoLocacao,
-    periodoMinimoLocacao,
-    descricao,
-    fotoImovel,
-    wifi,
-    arCondicionado,
-    manutencao,
-    aceitaVisita,
-    tipoMoradia,
-    sexoMorador,
-    anuncianteId,
-    proximidades,
-    endereco
-  } = req.body;
+export const getImoveisByCidade = async (req, res) => {
+  const { cidade, proximidade, sexoMorador, possuiMoradores } = req.query;
 
   try {
-    const newImovel = await prisma.imovel.create({
-      data: {
-        tipoQuarto,
-        status,
-        valorAluguel,
-        periodoMaximoLocacao,
-        periodoMinimoLocacao,
-        descricao,
-        fotoImovel,
-        wifi,
-        arCondicionado,
-        manutencao,
-        aceitaVisita,
-        tipoMoradia,
-        sexoMorador,
-        anunciante: {
-          connect: { id: anuncianteId },
-        },
-        proximidades: {
-          create: proximidades,
-        },
-        endereco: {
-          create: endereco,
-        },
-      },
-    });
-
-    res.status(201).json(newImovel);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: 'Erro ao criar imóvel.' });
-  }
-};
-
-export const getImoveisPorFiltros = async (req, res) => {
-    const {
-      cidade,
-      bairro,
-      valorMaximo,
-      tipoQuarto,
-      tipoMoradia,
-      wifi,
-      sexoMorador,
-      proximidades,
-    } = req.query;
-  
-    try {
-      // Monta o objeto de filtros dinâmicos
-      const filtros = {
-        valorAluguel: valorMaximo ? { lte: parseFloat(valorMaximo) } : undefined,
-        tipoQuarto: tipoQuarto || undefined,
-        tipoMoradia: tipoMoradia || undefined,
-        wifi: wifi ? wifi === 'true' : undefined,
-        sexoMorador: sexoMorador || undefined,
+    const imoveis = await prisma.imovel.findMany({
+      where: {
         endereco: {
           some: {
-            cidade: cidade || undefined,
-            bairro: bairro || undefined,
+            cidade: cidade,
           },
         },
-        proximidades: proximidades
+        proximidades: proximidade
           ? {
               some: {
-                descricao: { in: proximidades.split(',') }, // Proximidades como array de strings
+                nome: {
+                  in: proximidade.split(','),
+                },
               },
             }
           : undefined,
-      };
-  
-      // Remove campos não usados
-      Object.keys(filtros).forEach((key) => {
-        if (filtros[key] === undefined) delete filtros[key];
-      });
-  
-      // Busca no banco com Prisma
-      const imoveis = await prisma.imovel.findMany({
-        where: filtros,
-        include: {
-          endereco: true, // Inclui detalhes do endereço
-          proximidades: true, // Inclui as proximidades
-          anunciante: true, // Inclui detalhes do anunciante, se necessário
-        },
-      });
-  
-      if (imoveis.length === 0) {
-        return res.status(404).json({ message: 'Nenhum imóvel encontrado com os filtros fornecidos.' });
-      }
-  
-      res.status(200).json(imoveis);
-    } catch (error) {
-      console.error(error);
-      res.status(500).json({ error: 'Erro ao buscar imóveis.' });
-    }
-  };
-
-export const getAllImoveis = async (req, res) => {
-    try {
-      const userId = req.user.id; // ID do usuário autenticado, extraído do token
-      const anunciante = await prisma.anunciante.findUnique({
-        where: { userId },
-      });
-  
-      if (!anunciante) {
-        return res.status(403).json({ error: 'Acesso negado. Apenas anunciantes podem visualizar esta lista.' });
-      }
-  
-      const imoveis = await prisma.imovel.findMany({
-        where: { anuncianteId: anunciante.id }, // Apenas imóveis do anunciante autenticado
-        include: {
-          anunciante: true,
-          proximidades: true,
-          endereco: true,
-        },
-      });
-  
-      if (imoveis.length === 0) {
-        return res.status(404).json({ error: 'Nenhum imóvel encontrado para este anunciante.' });
-      }
-  
-      res.status(200).json(imoveis);
-    } catch (error) {
-      res.status(500).json({ error: 'Erro ao buscar os imóveis' });
-    }
-  };
-
-// Obter um imóvel por ID
-export const getImovelById = async (req, res) => {
-  const { id } = req.params;
-  try {
-    const imovel = await prisma.imovel.findUnique({
-      where: { id },
-      include: {
-        anunciante: true,
-        proximidades: true,
-        endereco: true,
+        sexoMorador: sexoMorador || undefined,
+        possuiMoradores: possuiMoradores !== undefined ? possuiMoradores : undefined,
       },
     });
-    if (!imovel) {
-      return res.status(404).json({ error: 'Imóvel não encontrado' });
-    }
-    res.status(200).json(imovel);
+
+    res.status(200).json(imoveis);
   } catch (error) {
-    res.status(500).json({ error: 'Erro ao buscar o imóvel' });
+    res.status(500).json({ error: 'Erro ao buscar imóveis' });
   }
 };
 
-// Atualizar um imóvel por ID
-export const updateImovel = async (req, res) => {
-  const { id } = req.params;
-  const {
-    tipoQuarto,
-    status,
-    valorAluguel,
-    periodoMaximoLocacao,
-    periodoMinimoLocacao,
-    descricao,
-    fotoImovel,
-    wifi,
-    arCondicionado,
-    manutencao,
-    aceitaVisita,
-    tipoMoradia,
-    sexoMorador,
-    anuncianteId,
-    proximidades,
-    endereco
-  } = req.body;
+export const getImoveisByAnunciante = async (req, res) => {
+  const anuncianteId = req.user.id;
+  try {
+    const imoveis = await prisma.imovel.findMany({
+      where: {
+        anuncianteId: anuncianteId,
+      },
+    });
+
+    res.status(200).json(imoveis);
+  } catch (error) {
+    res.status(500).json({ error: 'Erro ao buscar imóveis do anunciante' });
+  }
+};
+
+// Criar um imóvel (com autenticação)
+export const createImovel = async (req, res) => {
+  const anuncianteId = req.user.id; // Pega o ID do anunciante logado
+
+  const { tipoQuarto, status, valorAluguel, periodoMaximoLocacao, periodoMinimoLocacao, descricao, fotoImovel, wifi, arCondicionado, manutencao, aceitaVisita, aceitaFumante, acetaAnimal, tipoMoradia, sexoMorador, possuiMoradores, tipoAnunciante, restricaoGenero, proximidades, endereco } = req.body;
 
   try {
-    const updatedImovel = await prisma.imovel.update({
-      where: { id },
+    const imovel = await prisma.imovel.create({
       data: {
         tipoQuarto,
         status,
@@ -206,43 +67,109 @@ export const updateImovel = async (req, res) => {
         arCondicionado,
         manutencao,
         aceitaVisita,
+        aceitaFumante,
+        acetaAnimal,
         tipoMoradia,
         sexoMorador,
-        anunciante: {
-          connect: { id: anuncianteId },
-        },
+        possuiMoradores,
+        tipoAnunciante,
+        restricaoGenero,
+        anuncianteId,
         proximidades: {
-          upsert: proximidades.map((prox) => ({
-            where: { id: prox.id },
-            update: prox,
-            create: prox,
-          })),
+          connect: proximidades.map((prox) => ({ id: prox })), // Conectar as proximidades
         },
         endereco: {
-          upsert: endereco.map((end) => ({
-            where: { id: end.id },
-            update: end,
-            create: end,
-          })),
+          create: endereco, // Criar endereço com os dados passados
         },
       },
     });
 
-    res.status(200).json(updatedImovel);
+    res.status(201).json(imovel);
   } catch (error) {
-    res.status(500).json({ error: 'Erro ao atualizar o imóvel' });
+    res.status(500).json({ error: 'Erro ao criar imóvel' });
   }
 };
 
-// Deletar um imóvel por ID
-export const deleteImovel = async (req, res) => {
-  const { id } = req.params;
+// Editar um imóvel (com autenticação)
+export const updateImovel = async (req, res) => {
+  const anuncianteId = req.user.id; // Pega o ID do anunciante logado
+  const imovelId = req.params.id; // ID do imóvel a ser editado
+
+  const { tipoQuarto, status, valorAluguel, periodoMaximoLocacao, periodoMinimoLocacao, descricao, fotoImovel, wifi, arCondicionado, manutencao, aceitaVisita, aceitaFumante, acetaAnimal, tipoMoradia, sexoMorador, possuiMoradores, tipoAnunciante, restricaoGenero, proximidades, endereco } = req.body;
+
   try {
-    await prisma.imovel.delete({
-      where: { id },
+    const imovel = await prisma.imovel.update({
+      where: {
+         id: imovelId,
+         anuncianteId: anuncianteId,
+      },
+      data: {
+        tipoQuarto,
+        status,
+        valorAluguel,
+        periodoMaximoLocacao,
+        periodoMinimoLocacao,
+        descricao,
+        fotoImovel,
+        wifi,
+        arCondicionado,
+        manutencao,
+        aceitaVisita,
+        aceitaFumante,
+        acetaAnimal,
+        tipoMoradia,
+        sexoMorador,
+        possuiMoradores,
+        tipoAnunciante,
+        restricaoGenero,
+        proximidades: {
+          set: proximidades.map((prox) => ({ id: prox })),
+        },
+        endereco: {
+          update: endereco,
+        },
+      },
     });
-    res.status(204).send(); // Resposta sem conteúdo após exclusão
+
+    res.status(200).json(imovel);
   } catch (error) {
-    res.status(500).json({ error: 'Erro ao deletar o imóvel' });
+    res.status(500).json({ error: 'Erro ao editar imóvel' });
   }
 };
+
+export const deleteImovel = async (req, res) => {
+  const anuncianteId = req.user.id;
+  const imovelId = req.params.id;
+
+  try {
+    // Verifica se o imóvel pertence ao anunciante
+    const imovel = await prisma.imovel.findUnique({
+      where: {
+        id: imovelId,
+      },
+      include: {
+        anunciante: true,
+      },
+    });
+
+    if (!imovel) {
+      return res.status(404).json({ error: 'Imóvel não encontrado' });
+    }
+
+    if (imovel.anuncianteId !== anuncianteId) {
+      return res.status(403).json({ error: 'Você não tem permissão para deletar este imóvel' });
+    }
+
+    // Deleta o imóvel se o anunciante for o proprietário
+    await prisma.imovel.delete({
+      where: {
+        id: imovelId,
+      },
+    });
+
+    res.status(200).json({ message: 'Imóvel deletado com sucesso' });
+  } catch (error) {
+    res.status(500).json({ error: 'Erro ao deletar imóvel' });
+  }
+};
+
