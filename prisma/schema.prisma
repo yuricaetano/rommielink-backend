@@ -15,10 +15,16 @@ model User {
   senha String
   telefone String
   dataNascimento String
+  tipo TipoUsuario
   dataCriacao DateTime @default(now()) //dataCadastro
   updatedAt DateTime @updatedAt
   estudante Estudante?
   anunciante Anunciante?
+}
+
+enum TipoUsuario {
+  Estudante
+  Anunciante
 }
 
 model Estudante {
@@ -110,11 +116,10 @@ enum RestricaoGenero {
 model Imovel {
   id String @id @default(uuid())
   tipoQuarto TipoQuarto
-  status String
+  status Boolean  @default(true)
   valorAluguel Float
   dataCriacao DateTime @default(now())
-  periodoMaximoLocacao String
-  periodoMinimoLocacao String
+  periodoMinimoEstadia String
   descricao String
   fotoImovel String
   wifi Boolean
@@ -126,6 +131,7 @@ model Imovel {
   tipoMoradia TipoMoradia
   sexoMorador SexoMorador
   possuiMoradores Boolean @default(false)
+  moradores Morador[]
   tipoAnunciante TipoAnunciante
   moraNaPropriedade Boolean? // Se for proprietário, pode indicar se mora ou não
   restricaoGenero RestricaoGenero
@@ -133,7 +139,10 @@ model Imovel {
   anunciante Anunciante @relation(fields: [anuncianteId], references: [id], onDelete: Cascade)
   proximidades Proximidades[]
   endereco Endereco[]
-  moradores Morador[]
+  numeroQuartos Int
+  quartosDisponiveis Int
+  numeroBanheiros Int
+  banheiroPrivativo Boolean
 }
 
 model Morador {

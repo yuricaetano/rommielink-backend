@@ -51,7 +51,7 @@ export const getImoveisByAnunciante = async (req, res) => {
 export const createImovel = async (req, res) => {
   const anuncianteId = req.user.id; // Pega o ID do anunciante logado
 
-  const { tipoQuarto, status, valorAluguel, periodoMaximoLocacao, periodoMinimoLocacao, descricao, fotoImovel, wifi, arCondicionado, manutencao, aceitaVisita, aceitaFumante, acetaAnimal, tipoMoradia, sexoMorador, possuiMoradores, tipoAnunciante, restricaoGenero, proximidades, endereco } = req.body;
+  const { tipoQuarto, status, valorAluguel, periodoMinimoEstadia, descricao, fotoImovel, wifi, arCondicionado, manutencao, aceitaVisita, aceitaFumante, aceitaAnimal, tipoMoradia, sexoMorador, possuiMoradores, moradores, tipoAnunciante, restricaoGenero, proximidades, endereco, numeroQuartos, quartosDisponiveis, numeroBanheiros, banheiroPrivativo } = req.body;
 
   try {
     const imovel = await prisma.imovel.create({
@@ -59,8 +59,7 @@ export const createImovel = async (req, res) => {
         tipoQuarto,
         status,
         valorAluguel,
-        periodoMaximoLocacao,
-        periodoMinimoLocacao,
+        periodoMinimoEstadia,
         descricao,
         fotoImovel,
         wifi,
@@ -68,10 +67,22 @@ export const createImovel = async (req, res) => {
         manutencao,
         aceitaVisita,
         aceitaFumante,
-        acetaAnimal,
+        aceitaAnimal,
         tipoMoradia,
         sexoMorador,
         possuiMoradores,
+        moradores: {
+          createMany: {
+            data: moradores.map((morador) => ({
+              idadeMinima: morador.idadeMinima,
+              idadeMaxima: morador.idadeMaxima,
+              genero: morador.genero,
+              curso: morador.curso,
+              instituicao: morador.instituicao,
+              idiomas: morador.idiomas,
+            })),
+          },
+        },
         tipoAnunciante,
         restricaoGenero,
         anuncianteId,
@@ -81,6 +92,10 @@ export const createImovel = async (req, res) => {
         endereco: {
           create: endereco, // Criar endereço com os dados passados
         },
+        numeroQuartos,
+        quartosDisponiveis,
+        numeroBanheiros,
+        banheiroPrivativo,
       },
     });
 
@@ -95,7 +110,7 @@ export const updateImovel = async (req, res) => {
   const anuncianteId = req.user.id; // Pega o ID do anunciante logado
   const imovelId = req.params.id; // ID do imóvel a ser editado
 
-  const { tipoQuarto, status, valorAluguel, periodoMaximoLocacao, periodoMinimoLocacao, descricao, fotoImovel, wifi, arCondicionado, manutencao, aceitaVisita, aceitaFumante, acetaAnimal, tipoMoradia, sexoMorador, possuiMoradores, tipoAnunciante, restricaoGenero, proximidades, endereco } = req.body;
+  const { tipoQuarto, status, valorAluguel, periodoMinimoEstadia, descricao, fotoImovel, wifi, arCondicionado, manutencao, aceitaVisita, aceitaFumante, acetaAnimal, tipoMoradia, sexoMorador, possuiMoradores, moradores, tipoAnunciante, restricaoGenero, proximidades, endereco,numeroQuartos, quartosDisponiveis, numeroBanheiros, banheiroPrivativo } = req.body;
 
   try {
     const imovel = await prisma.imovel.update({
@@ -107,8 +122,7 @@ export const updateImovel = async (req, res) => {
         tipoQuarto,
         status,
         valorAluguel,
-        periodoMaximoLocacao,
-        periodoMinimoLocacao,
+        periodoMinimoEstadia,
         descricao,
         fotoImovel,
         wifi,
@@ -120,6 +134,18 @@ export const updateImovel = async (req, res) => {
         tipoMoradia,
         sexoMorador,
         possuiMoradores,
+        moradores: {
+          createMany: {
+            data: moradores.map((morador) => ({
+              idadeMinima: morador.idadeMinima,
+              idadeMaxima: morador.idadeMaxima,
+              genero: morador.genero,
+              curso: morador.curso,
+              instituicao: morador.instituicao,
+              idiomas: morador.idiomas,
+            })),
+          },
+        },
         tipoAnunciante,
         restricaoGenero,
         proximidades: {
@@ -128,6 +154,10 @@ export const updateImovel = async (req, res) => {
         endereco: {
           update: endereco,
         },
+        numeroQuartos,
+        quartosDisponiveis,
+        numeroBanheiros,
+        banheiroPrivativo,
       },
     });
 
