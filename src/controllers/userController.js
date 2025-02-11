@@ -33,6 +33,7 @@ export const createUser = async (req, res) => {
         sobrenome,
         email,
         senha: hashedSenha,
+        confirmarSenha: hashedSenha,
         telefone,
         dataNascimento,
         tipo: tipoUsuario,
