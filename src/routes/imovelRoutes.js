@@ -4,16 +4,17 @@ import {
   getImoveisByAnunciante,
   updateImovel,
   deleteImovel,
-  getImoveisByCidade
+  getImoveisByCidade,
+  checkIfAnunciante
 } from '../controllers/imovelController.js';
 import authMiddleware from '../middlewares/authMiddleware.js';
 
 const router = Router();
 
-router.post('/anunciante/imovel', authMiddleware, createImovel);
+router.post('/anunciante/imovel', authMiddleware, checkIfAnunciante, createImovel);
 router.get('/imovel', getImoveisByCidade);
 router.get('/anunciante/imovel', authMiddleware, getImoveisByAnunciante);
-router.put('/anunciante/imovel/:id', authMiddleware, updateImovel);
-router.delete('/anunciante/imovel/:id', authMiddleware, deleteImovel);
+router.put('/anunciante/imovel/:id', authMiddleware,checkIfAnunciante, updateImovel);
+router.delete('/anunciante/imovel/:id', authMiddleware,checkIfAnunciante, deleteImovel);
 
 export default router;

@@ -2,14 +2,14 @@ import { Router } from 'express';
 import { 
   getAllUsers, 
   createUser,
-  // confirmarEmail, 
   getUserById, 
   updateUser,
   deleteUser,
   forgotPassword,
   updatePassword,
   userLogin,
-  userLogout
+  userLogout,
+  mudarTipoUsuario
 } from '../controllers/userController.js';
 import authMiddleware from '../middlewares/authMiddleware.js';
 
@@ -27,5 +27,6 @@ router.post('/logout', authMiddleware, userLogout);
 router.put('/:id', authMiddleware, updateUser);
 router.put('/:id/password', authMiddleware, updatePassword);
 router.delete('/:id', authMiddleware, deleteUser);
+router.put('/mudar-tipo',authMiddleware, mudarTipoUsuario);
 
 export default router;

@@ -216,3 +216,25 @@ export const updatePassword = async (req, res) => {
     res.status(500).json({ error: 'Erro ao redefinir senha.' });
   }
 };
+
+export const mudarTipoUsuario = async (req, res) => {
+  const { userId } = req;  // Supondo que o ID do usuário esteja no token de autenticação
+  const { tipoUsuario } = req.body;
+
+  try {
+    // Verificar se o tipo de usuário é válido
+    if (tipoUsuario !== 'Estudante' && tipoUsuario !== 'Anunciante') {
+      return res.status(400).json({ error: 'Tipo de usuário inválido' });
+    }
+
+    // Atualiza o tipo de usuário
+    const user = await prisma.user.update({
+      where: { id: userId },
+      data: { tipoUsuario },
+    });
+
+    res.status(200).json(user);
+  } catch (error) {
+    res.status(500).json({ error: 'Erro ao atualizar tipo de usuário' });
+  }
+};

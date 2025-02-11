@@ -1,6 +1,16 @@
 import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
 
+export const checkIfAnunciante = (req, res, next) => {
+  const user = req.user;
+
+  if (user.tipoUsuario !== 'anunciante') {
+    return res.status(403).json({ error: 'Apenas anunciantes podem cadastrar imóveis' });
+  }
+
+  next();
+};
+
 export const getImoveisByCidade = async (req, res) => {
   const { cidade, proximidade, sexoMorador, possuiMoradores } = req.query;
 
