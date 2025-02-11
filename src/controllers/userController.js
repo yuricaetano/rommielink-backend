@@ -2,8 +2,9 @@ import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import nodemailer from 'nodemailer';
 import { v4 as uuidv4 } from 'uuid';
-import { prisma } from '../prismaClient.js';
+import { PrismaClient } from '@prisma/client';
 
+const prisma = new PrismaClient();
 const SECRET_KEY = process.env.SECRET_KEY;
 const SALT_ROUNDS = 10;
 
