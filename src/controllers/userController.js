@@ -1,8 +1,8 @@
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
+import nodemailer from 'nodemailer';
 import { v4 as uuidv4 } from 'uuid';
 import { prisma } from '../prismaClient.js';
-import { sendEmail } from '../utils/emailService.js';
 
 const SECRET_KEY = process.env.SECRET_KEY;
 const SALT_ROUNDS = 10;
@@ -164,7 +164,25 @@ export const forgotPassword = async (req, res) => {
       data: { resetToken, resetTokenExpires },
     });
 
-    await sendEmail(email, 'Redefinição de Senha', `Use este token para redefinir sua senha: ${resetToken}`);
+    // Configuração do transporte do Nodemailer
+    const transporter = nodemailer.createTransport({
+      service: 'gmail', // Ou outro serviço, como SendGrid, Mailgun, etc.
+      auth: {
+        user: process.env.EMAIL_USER, // Seu e-mail de envio
+        pass: process.env.EMAIL_PASS, // Senha ou App Password
+      },
+    });
+
+    // Opções do e-mail
+    const mailOptions = {
+      from: '"Roomielink" <roomielink@gmail.com>', // E-mail de remetente
+      to: email, // E-mail do destinatário
+      subject: 'Redefinição de Senha',
+      text: `Use este token para redefinir sua senha: ${resetToken}`,
+    };
+
+    // Envia o e-mail
+    await transporter.sendMail(mailOptions);
 
     res.status(200).json({ message: 'Email de recuperação enviado.' });
   } catch (error) {
