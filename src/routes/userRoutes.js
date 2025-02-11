@@ -6,6 +6,8 @@ import {
   getUserById, 
   updateUser,
   deleteUser,
+  forgotPassword,
+  updatePassword,
   userLogin,
   userLogout
 } from '../controllers/userController.js';
@@ -15,7 +17,7 @@ const router = Router();
 
 // Rotas públicas
 router.post('/', createUser);
-// router.get('/confirmar-email', confirmarEmail);
+router.post('/forgot-password', forgotPassword);
 router.post('/login', userLogin);
 router.get('/', getAllUsers);
 router.get('/:id', getUserById);
@@ -23,6 +25,7 @@ router.get('/:id', getUserById);
 // Rotas protegidas com JWT
 router.post('/logout', authMiddleware, userLogout);
 router.put('/:id', authMiddleware, updateUser);
+router.put('/:id/password', authMiddleware, updatePassword);
 router.delete('/:id', authMiddleware, deleteUser);
 
 export default router;
