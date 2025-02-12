@@ -10,13 +10,9 @@ const SALT_ROUNDS = 10;
 
 // Criar usuário
 export const createUser = async (req, res) => {
-  const { nome, sobrenome, email, senha, confirmarSenha, telefone, dataNascimento, tipoUsuario } = req.body;
+  const { nome, sobrenome, email, senha, telefone, dataNascimento, tipoUsuario } = req.body;
 
   try {
-    if (senha !== confirmarSenha) {
-      return res.status(400).json({ error: 'As senhas não coincidem.' });
-    }
-
     if (!["Estudante", "Anunciante"].includes(tipoUsuario)) {
       return res.status(400).json({ error: 'Tipo de usuário inválido. Escolha "Estudante" ou "Anunciante".' });
     }
@@ -34,7 +30,6 @@ export const createUser = async (req, res) => {
         sobrenome,
         email,
         senha: hashedSenha,
-        confirmarSenha: hashedSenha,
         telefone,
         dataNascimento,
         tipo: tipoUsuario,
